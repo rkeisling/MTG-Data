@@ -16,6 +16,7 @@ class Card(db.Entity):
     num = Required(int)
     foil = Required(bool)
     pricings = Set(Pricing)
+    composite_key(card, foil)
 
 db.bind('sqlite', 'database.sqlite', create_db=True)
 db.generate_mapping(create_tables=True)

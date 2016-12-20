@@ -6,19 +6,12 @@ import re
 from random import uniform
 from datetime import date
 import json
-# the_file = open('inventory.txt')
-# inventory = ast.literal_eval(the_file.read())
-inventory = [(1, 'Abyssal Nocturnus', 'Guildpact ', False),
-             (2, 'Advent of the Wurm', "Dragon's Maze ", True),
-             (3, 'Advent of the Wurm', "Dragon's Maze ", False),
-             (1, 'Aegis Angel', 'Welcome Deck 2016 ', False)]
+import ast
+the_file = open('inventory.txt')
+inventory = ast.literal_eval(the_file.read())
 
 
 def get_card_set():
-    """
-    Returns a list of tuples, each tuple has the formatted pair of the card set
-    and the card.
-    """
     formatted = []
     # remove punctuation pattern for slugification
     remove = string.punctuation
@@ -36,11 +29,11 @@ def get_card_set():
                                                card_set[1],
                                                card_set[0][0],
                                                card_set[1][2:])
-        elif 'magic' in card_set and \
-             '2012' in card_set or \
-             '2013' in card_set or \
-             '2011' in card_set or \
-             '2010' in card_set:
+        elif ('magic' in card_set and
+              ('2012' in card_set or
+               '2013' in card_set or
+               '2011' in card_set or
+               '2010' in card_set)):
             card_set = card_set.split()
             card_set = "{0}-{1}-{2}{3}".format(card_set[0],
                                                card_set[1],
@@ -50,12 +43,16 @@ def get_card_set():
             card_set = 'magic-modern-event-deck'
         elif 'game day' in card_set:
             card_set = 'game-day-promos'
-        elif 'wpn' in card_set:
-            card_set = 'wpn-promos'
+        elif ('wpn' in card_set or
+              'gateway' in card_set):
+            try:
+                card_set = 'wpn-promos'
+            except ValueError:
+                card_set = 'gateway-promos'
         elif 'friday' in card_set:
             card_set = 'fnm-promos'
-        elif 'promos' in card_set or \
-             'intro pack' in card_set:
+        elif ('promos' in card_set or
+              'intro pack' in card_set):
             card_set = 'unique-and-miscellaneous-promos'
         elif '2015 edition' in card_set:
             card_set = 'modern-masters-2015'
@@ -72,10 +69,7 @@ def get_card_set():
         else:
             card_set = re.sub(pattern, '', card_set).split()
             card_set = '-'.join(ch for ch in card_set)
-        name = each[1]
-        if each[3] is True:
-            name = each[1] + ' *'
-        formatted.append((card_set, card, each[0], each[3], name))
+        formatted.append((card_set, card, each[0], each[3], each[1]))
     return formatted
 
 
@@ -88,7 +82,7 @@ def price(table):
 
 
 def get_prices(card_tuple):
-    sleep(uniform(0.5, 3))
+    sleep(uniform(0.5, 2))
     url = "http://shop.tcgplayer.com/magic/{0}/{1}".format(card_tuple[0],
                                                            card_tuple[1])
     page = get(url)
@@ -101,13 +95,21 @@ def get_prices(card_tuple):
         'date': str(date.today()),
         'foil': card_tuple[3]
     }
+    print(card_tuple[1], prices)
     return prices
 
 
 def main():
-    the_file = open('card_prices.txt', 'w')
-    result = {card[4]: get_prices(card) for card in get_card_set()}
-    the_file.write(json.dumps(result))
+    with open('card_prices.txt') as f:
+        try:
+            result = json.load(f)
+        except json.JSONDecodeError:
+            result = {}
+    for card in get_card_set():
+        if card[4] not in result:
+            result[card[4]] = get_prices(card)
+            with open('card_prices.txt', 'w') as f:
+                f.write(json.dumps(result))
 
 
 if __name__ == '__main__':
