@@ -12,12 +12,13 @@ class Pricing(db.Entity):
 
 
 class Card(db.Entity):
-    name = Required(str, unique=True)
+    name = Required(str)
+    cardset = Required(str)
     num = Required(int)
     foil = Required(bool)
     pricings = Set(Pricing)
-    composite_key(card, foil)
+    composite_key(name, cardset, foil)
 
 db.bind('sqlite', 'database.sqlite', create_db=True)
 db.generate_mapping(create_tables=True)
-# sql_debug(True)
+sql_debug(True)

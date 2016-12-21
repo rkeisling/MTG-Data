@@ -1,6 +1,7 @@
 from requests import get
 from bs4 import BeautifulSoup
 from time import sleep
+import pickle
 
 
 def card(row):
@@ -37,8 +38,10 @@ def fetch_cards():
 
 
 def main():
-    the_file = open('inventory.txt', 'w')
-    the_file.write(str(fetch_cards()))
+    print('Getting inventory from deckbox...')
+    with open('inventory.txt', 'wb') as f:
+        pickle.dump(fetch_cards(), f)
+        f.close()
 
 
 if __name__ == '__main__':
