@@ -41,7 +41,6 @@ def main():
     print('Getting inventory from deckbox...')
     with open('inventory.txt', 'wb') as f:
         pickle.dump(fetch_cards(), f)
-        f.close()
 
 
 if __name__ == '__main__':

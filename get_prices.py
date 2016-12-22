@@ -9,7 +9,6 @@ import pickle
 import os
 with open('inventory.txt', 'rb') as f:
     inventory = pickle.load(f)
-    f.close()
 
 
 def get_url(cardname, cardname_set):
@@ -156,7 +155,6 @@ def main():
             print((card[1], cardset), result[card[1], cardset])
             with open('card_prices.txt', 'wb') as f:
                 pickle.dump(result, f)
-                f.close()
 
 
 if __name__ == '__main__':
