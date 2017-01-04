@@ -69,6 +69,8 @@ def get_url(cardname, cardname_set):
     elif ('promos' in card_set or
           'intro pack' in card_set):
         card_set = ['unique-and-miscellaneous-promos']
+    elif 'kaladesh inventions' in card_set:
+        card_set = ['masterpiece-series-kaladesh-inventions']
     elif '2015 edition' in card_set:
         card_set = ['modern-masters-2015']
     elif 'sixth' in card_set:
@@ -138,21 +140,22 @@ def main():
             result = {}
         f.close()
     for card in inventory:
-        if (card[1], card[2].strip()) not in result:
+        if (card[1], card[2].strip(), card[3]) not in result:
             cardset = card[2].strip()
-            result[(card[1], cardset)] = get_prices(card)
-            result[(card[1], cardset)]['foil'] = card[3]
-            result[(card[1], cardset)]['inventory'] = card[0]
-            print((card[1], cardset), result[card[1], cardset])
+            result[(card[1], cardset, card[3])] = get_prices(card)
+            result[(card[1], cardset, card[3])]['inventory'] = card[0]
+            print((card[1], cardset, card[3]),
+                  result[(card[1], cardset, card[3])])
             with open('card_prices.txt', 'wb') as f:
                 pickle.dump(result, f)
-                f.close()
-        elif ((card[1], card[2].strip()) in result and
-              result[(card[1], card[2].strip())]['inventory'] != card[0] and
-              result[(card[1], card[2].strip())]['foil'] == card[3]):
+        elif ((card[1], card[2].strip(), card[3]) in result and
+              result[(card[1],
+                      card[2].strip(),
+                      card[3])]['inventory'] != card[0] and
+              result[(card[1], card[2].strip(), card[3])] == card[3]):
             cardset = card[2].strip()
-            result[(card[1], cardset)]['inventory'] += card[0]
-            print((card[1], cardset), result[card[1], cardset])
+            result[(card[1], cardset, card[3])]['inventory'] += card[0]
+            print((card[1], cardset, card[3]), result[card[1], cardset])
             with open('card_prices.txt', 'wb') as f:
                 pickle.dump(result, f)
 
