@@ -14,40 +14,40 @@ def main():
         for key, value in inventory.items():
             print(key, value)
             # adds to db if not already there
-            if (key[0], key[1], value['foil']) not in names:
+            if (key[0], key[1], key[2]) not in names:
                 Card(name=key[0],
                      num=value['inventory'],
-                     foil=value['foil'],
+                     foil=key[2],
                      cardset=key[1])
             # changes inventory num in db if different
             this_name = Card.get(
-                name=key[0], cardset=key[1], foil=value['foil'])
+                name=key[0], cardset=key[1], foil=key[2])
             if (this_name.num != value['inventory'] and
-                    this_name.foil != value['foil']):
+                    this_name.foil != key[2]):
                         update_num(key[0], value['inventory'])
             # adds card to a list for next step
             cur_list.append(key[0])
             # adds prices
             # key[1] is cardset
             # value['foil'] is foil
-            if value['foil'] is True:
+            if key[2]:
                 try:
                     add_pricing(
                         (key[0], value['median']['foil'],
-                         value['date'], key[1], value['foil']))
+                         value['date'], key[1], key[2]))
                 except KeyError:
                     add_pricing(
                         (key[0], value['median']['normal'],
-                         value['date'], key[1], value['foil']))
+                         value['date'], key[1], key[2]))
             else:
                 try:
                     add_pricing(
                         (key[0], value['median']['normal'],
-                         value['date'], key[1], value['foil']))
+                         value['date'], key[1], key[2]))
                 except KeyError:
                     add_pricing(
                         (key[0], value['median']['foil'],
-                         value['date'], key[1], value['foil']))
+                         value['date'], key[1], key[2]))
         # deletes card if not there anymore
         delete(c for c in Card if c.name not in cur_list)
 

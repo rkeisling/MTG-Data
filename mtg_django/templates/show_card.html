@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>MTG</title>
+  <link rel="stylesheet" href="static/mtg.css"/>
+</head>
+<body>
+<!-- name, set, num, foil, pricings -->
+<h2> {{ card.name }}
+  {% if card.foil %}
+    (Foil)
+    {% else %}
+    (Nonfoil)
+    {% endif %}
+  ({{ card.num }})</h2>
+<h3> {{ card.cardset }} </h3>
+<h3> Pricings: </h3>
+{% for p in card.pricings %}
+<p>
+  {{ p.date }}: ${{ '{:.2f}'.format(p.price) }}
+</p>
+{% endfor %}
+</body>
+</html>
